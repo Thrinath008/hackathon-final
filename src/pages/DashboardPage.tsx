@@ -7,6 +7,7 @@ import { collection, query, where, getDocs, doc, updateDoc, arrayUnion, getDoc }
 import { db, auth } from "@/firebase";
 import ChatModal from "@/components/ChatModal";
 import SearchProfilePage from "./SearchProfilePage";
+import FindMembersPage from "./FindMembersPage";
 
 interface Project {
   id: number;
@@ -106,7 +107,7 @@ export default function DashboardPage() {
           const friendRef = doc(db, "users", uid);
           const friendDoc = await getDoc(friendRef);
           const friendData = friendDoc.data();
-          if (!friendData) {
+          if (!userData) {
             console.warn(`Friend ${uid} not found.`);
             continue;
           }
@@ -204,8 +205,7 @@ export default function DashboardPage() {
           <div className="overflow-x-auto">
             <TabsList className="inline-flex w-full max-w-full sm:max-w-lg bg-transparent p-0">
               <TabsTrigger value="projects" className="text-base px-3 py-2">Projects</TabsTrigger>
-              <TabsTrigger value="requests" className="text-base px-3 py-2">Requests</TabsTrigger>
-              <TabsTrigger value="notifications" className="text-base px-3 py-2">Notifications</TabsTrigger>
+              <TabsTrigger value="find-members" className="text-base px-3 py-2">Find Members</TabsTrigger>
               <TabsTrigger value="search" className="text-base px-3 py-2">Search Profiles</TabsTrigger>
             </TabsList>
           </div>
@@ -238,9 +238,6 @@ export default function DashboardPage() {
                 </Card>
               ))}
             </div>
-          </TabsContent>
-
-          <TabsContent value="requests" className="space-y-4">
             <div className="grid gap-4">
               <h2 className="text-lg font-bold">Pending Requests</h2>
               {requests.length === 0 ? (
@@ -297,17 +294,8 @@ export default function DashboardPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="notifications" className="space-y-4">
-            <div className="grid gap-4">
-              {notifications.map(notification => (
-                <Card key={notification.id}>
-                  <CardContent className="p-4">
-                    <p>{notification.text}</p>
-                    <p className="text-sm text-muted-foreground">{notification.time}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+          <TabsContent value="find-members" className="space-y-4">
+            <FindMembersPage />
           </TabsContent>
 
           <TabsContent value="search" className="space-y-4">
