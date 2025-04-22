@@ -92,23 +92,21 @@ export default function FindMembersFlow() {
           const users = querySnapshot.docs
             .map(doc => ({ id: doc.id, ...doc.data() } as User))
             .filter(user => user.id !== currentUser?.uid); // Exclude current user
-          // Filter by role and skills
+          // Filter by role or any skill match
           const results = users.filter(
             user =>
-              user.role === selectedRole &&
-              selectedSkills.every(skill =>
-                user.skills.some(s => s.name === skill)
-              )
+              user.role === selectedRole ||
+              user.skills.some(s => selectedSkills.includes(s.name))
           );
           // Add match percentage (based on skill overlap)
           const matched = results.map(user => ({
             ...user,
             match: Math.round(
               (user.skills.filter(s => selectedSkills.includes(s.name)).length /
-                selectedSkills.length) * 100
+                Math.max(selectedSkills.length, user.skills.length)) * 100
             ) || 80 // Fallback match score
           }));
-          setMatchedUsers(matched.length ? matched : users.filter(u => u.role === selectedRole));
+          setMatchedUsers(matched);
         } catch (error) {
           console.error("Error fetching users:", error);
         } finally {
